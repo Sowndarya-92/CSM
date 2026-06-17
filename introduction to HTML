@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to Big Data Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0f14;
+    --bg-panel:#11171f;
+    --bg-panel-hover:#161f29;
+    --line:#202b37;
+    --line-bright:#2c3a4a;
+    --text:#e7edf3;
+    --text-dim:#8694a3;
+    --cyan:#4fd6e0;
+    --cyan-dim:#1d5a60;
+    --amber:#e8a23a;
+    --amber-dim:#5a4420;
+    --magenta:#d9709a;
+    --green:#6fcf97;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  body{
+    background:var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(79,214,224,0.06), transparent 40%),
+      radial-gradient(circle at 85% 100%, rgba(232,162,58,0.05), transparent 40%);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    min-height:100vh;
+  }
+
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  h1,h2,h3{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    color:var(--text);
+  }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 28px; }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    border-bottom:1px solid var(--line);
+    padding:18px 0;
+  }
+  .topbar-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:14px;
+    color:var(--cyan);
+  }
+  .logo .dot{
+    width:8px; height:8px;
+    background:var(--cyan);
+    border-radius:50%;
+    box-shadow:0 0 8px var(--cyan);
+    animation:pulse 2s infinite ease-in-out;
+  }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+  .progress-track{
+    display:flex;
+    gap:6px;
+  }
+  .progress-seg{
+    width:34px; height:4px;
+    background:var(--line);
+    border-radius:2px;
+    transition:background 0.3s ease;
+  }
+  .progress-seg.done{ background:var(--cyan); }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:80px 0 70px;
+    border-bottom:1px solid var(--line);
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    color:var(--text-dim);
+    letter-spacing:1.5px;
+    margin-bottom:18px;
+  }
+  .hero-eyebrow span{ color:var(--amber); }
+  .hero h1{
+    font-size:46px;
+    line-height:1.12;
+    max-width:680px;
+    margin-bottom:20px;
+  }
+  .hero h1 .accent{ color:var(--cyan); }
+  .hero p{
+    color:var(--text-dim);
+    max-width:560px;
+    font-size:16px;
+  }
+  .hero-hint{
+    margin-top:30px;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    font-size:13px;
+    color:var(--text-dim);
+    font-family:'JetBrains Mono', monospace;
+    border:1px dashed var(--line-bright);
+    padding:9px 16px;
+    border-radius:20px;
+  }
+  .hero-hint .arrow{ color:var(--cyan); animation:bounce 1.4s infinite ease-in-out; }
+  @keyframes bounce{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(3px);} }
+
+  /* ---------- Section shell ---------- */
+  section{ padding:72px 0; border-bottom:1px solid var(--line); }
+  .section-tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--cyan);
+    letter-spacing:1.5px;
+    margin-bottom:10px;
+  }
+  .section-title{ font-size:30px; margin-bottom:14px; }
+  .section-desc{ color:var(--text-dim); max-width:620px; margin-bottom:46px; font-size:15px; }
+
+  /* ---------- 3 Vs (interactive cards) ---------- */
+  .v-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+  }
+  .v-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:0;
+    cursor:pointer;
+    overflow:hidden;
+    transition:border-color 0.25s ease, transform 0.25s ease;
+  }
+  .v-card:hover{ transform:translateY(-3px); border-color:var(--line-bright); }
+  .v-card.active{ border-color:var(--card-color); box-shadow:0 0 0 1px var(--card-color) inset; }
+
+  .v-card-head{
+    padding:26px 24px 20px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+  }
+  .v-letter{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:38px;
+    color:var(--card-color);
+    line-height:1;
+  }
+  .v-name{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:1.5px;
+    color:var(--text-dim);
+    text-transform:uppercase;
+  }
+  .v-card-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.35s ease, padding 0.35s ease;
+    border-top:1px solid var(--line);
+  }
+  .v-card.active .v-card-body{
+    max-height:260px;
+    border-top-color:var(--line-bright);
+  }
+  .v-card-body-inner{ padding:20px 24px 26px; }
+  .v-card-body p{ font-size:13.5px; color:var(--text-dim); margin-bottom:14px; }
+  .v-example{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--card-color);
+    background:rgba(255,255,255,0.03);
+    padding:9px 12px;
+    border-radius:6px;
+    border-left:2px solid var(--card-color);
+  }
+  .v-card[data-v="volume"]{ --card-color:var(--cyan); }
+  .v-card[data-v="velocity"]{ --card-color:var(--amber); }
+  .v-card[data-v="variety"]{ --card-color:var(--magenta); }
+
+  .v-tap-hint{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color:var(--text-dim);
+    padding:0 24px 18px;
+  }
+  .v-card.active .v-tap-hint{ display:none; }
+
+  /* ---------- Pipeline ---------- */
+  .pipeline{
+    display:flex;
+    align-items:stretch;
+    gap:0;
+    position:relative;
+  }
+  .stage{
+    flex:1;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:22px 18px;
+    cursor:pointer;
+    position:relative;
+    z-index:2;
+    transition:border-color 0.25s ease, background 0.25s ease;
+  }
+  .stage:hover{ background:var(--bg-panel-hover); }
+  .stage.active{
+    border-color:var(--cyan);
+    background:var(--bg-panel-hover);
+  }
+  .stage + .stage{ margin-left:18px; }
+  .stage-num{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color:var(--cyan);
+    margin-bottom:10px;
+  }
+  .stage h4{ font-size:15.5px; margin-bottom:6px; }
+  .stage p{ font-size:12.5px; color:var(--text-dim); }
+
+  .connector{
+    position:absolute;
+    top:50%;
+    height:1px;
+    background:repeating-linear-gradient(90deg, var(--line-bright) 0 6px, transparent 6px 11px);
+    z-index:1;
+  }
+
+  .pipeline-detail{
+    margin-top:24px;
+    background:var(--bg-panel);
+    border:1px solid var(--line-bright);
+    border-radius:10px;
+    padding:24px 28px;
+    display:none;
+  }
+  .pipeline-detail.show{ display:block; }
+  .pipeline-detail-tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    color:var(--cyan);
+    margin-bottom:8px;
+  }
+  .pipeline-detail h4{ font-size:19px; margin-bottom:10px; }
+  .pipeline-detail p{ color:var(--text-dim); font-size:14px; margin-bottom:12px; }
+  .pipeline-tools{ display:flex; gap:10px; flex-wrap:wrap; }
+  .tool-chip{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    background:rgba(79,214,224,0.08);
+    color:var(--cyan);
+    border:1px solid var(--cyan-dim);
+    padding:6px 12px;
+    border-radius:20px;
+  }
+
+  /* ---------- Architecture ---------- */
+  .arch-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+  .arch-layer{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-left:3px solid var(--layer-color);
+    border-radius:8px;
+    padding:20px 22px;
+    cursor:pointer;
+    transition:background 0.2s ease, transform 0.2s ease;
+  }
+  .arch-layer:hover{ transform:translateX(3px); background:var(--bg-panel-hover); }
+  .arch-layer.active{ background:var(--bg-panel-hover); }
+  .arch-layer-head{ display:flex; justify-content:space-between; align-items:center; }
+  .arch-layer h4{ font-size:16px; }
+  .arch-toggle{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--text-dim);
+    transition:transform 0.25s ease;
+  }
+  .arch-layer.active .arch-toggle{ transform:rotate(45deg); color:var(--layer-color); }
+  .arch-layer-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height 0.3s ease;
+  }
+  .arch-layer.active .arch-layer-body{ max-height:140px; margin-top:12px; }
+  .arch-layer-body p{ font-size:13px; color:var(--text-dim); }
+
+  .arch-layer[data-layer="ingest"]{ --layer-color:var(--cyan); }
+  .arch-layer[data-layer="store"]{ --layer-color:var(--amber); }
+  .arch-layer[data-layer="process"]{ --layer-color:var(--magenta); }
+  .arch-layer[data-layer="serve"]{ --layer-color:var(--green); }
+
+  /* ---------- Quiz / check ---------- */
+  .quiz-box{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:30px 32px;
+  }
+  .quiz-q{ font-size:16px; margin-bottom:20px; }
+  .quiz-options{ display:flex; flex-direction:column; gap:10px; }
+  .quiz-opt{
+    background:rgba(255,255,255,0.02);
+    border:1px solid var(--line);
+    border-radius:7px;
+    padding:13px 16px;
+    font-size:14px;
+    cursor:pointer;
+    transition:border-color 0.2s ease, background 0.2s ease;
+  }
+  .quiz-opt:hover{ border-color:var(--line-bright); }
+  .quiz-opt.correct{ border-color:var(--green); background:rgba(111,207,151,0.08); color:var(--green); }
+  .quiz-opt.wrong{ border-color:var(--magenta); background:rgba(217,112,154,0.08); color:var(--magenta); }
+  .quiz-feedback{
+    margin-top:16px;
+    font-size:13.5px;
+    color:var(--text-dim);
+    display:none;
+  }
+  .quiz-feedback.show{ display:block; }
+
+  footer{
+    padding:40px 0 60px;
+    text-align:center;
+    color:var(--text-dim);
+    font-size:13px;
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  @media (max-width:880px){
+    .hero h1{ font-size:32px; }
+    .v-grid{ grid-template-columns:1fr; }
+    .pipeline{ flex-direction:column; }
+    .stage + .stage{ margin-left:0; margin-top:14px; }
+    .connector{ display:none; }
+    .arch-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="logo"><span class="dot"></span>BIG_DATA.INTRO</div>
+    <div class="progress-track" id="progressTrack">
+      <div class="progress-seg" data-seg="1"></div>
+      <div class="progress-seg" data-seg="2"></div>
+      <div class="progress-seg" data-seg="3"></div>
+      <div class="progress-seg" data-seg="4"></div>
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow">MODULE 01 <span>·</span> FOUNDATIONS</div>
+    <h1>Big data isn't about <span class="accent">size</span> — it's about what your tools can no longer ignore.</h1>
+    <p>This is a click-through primer, not a slideshow. Every card, stage, and layer below responds to a click — explore them in any order to build the full picture.</p>
+    <div class="hero-hint"><span class="arrow">↓</span> Start with the three Vs below</div>
+  </div>
+</div>
+
+<section id="vs-section">
+  <div class="wrap">
+    <div class="section-tag">01 / CHARACTERISTICS</div>
+    <h2 class="section-title">The three Vs</h2>
+    <p class="section-desc">Before "big data" meant a tech stack, it meant a problem definition. Click each letter to see why traditional databases struggle with it.</p>
+
+    <div class="v-grid" id="vGrid">
+      <div class="v-card" data-v="volume">
+        <div class="v-card-head">
+          <div class="v-letter">V₁</div>
+          <div class="v-name">Volume</div>
+        </div>
+        <div class="v-tap-hint">tap to expand →</div>
+        <div class="v-card-body">
+          <div class="v-card-body-inner">
+            <p>The sheer scale of data generated — often too large to fit on a single machine's disk or process in memory at once.</p>
+            <div class="v-example">e.g. 500 hours of video uploaded to YouTube every minute</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="v-card" data-v="velocity">
+        <div class="v-card-head">
+          <div class="v-letter">V₂</div>
+          <div class="v-name">Velocity</div>
+        </div>
+        <div class="v-tap-hint">tap to expand →</div>
+        <div class="v-card-body">
+          <div class="v-card-body-inner">
+            <p>The speed at which new data arrives and must be acted on — sometimes in real time, not in nightly batches.</p>
+            <div class="v-example">e.g. stock ticks, sensor streams, fraud detection at swipe-time</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="v-card" data-v="variety">
+        <div class="v-card-head">
+          <div class="v-letter">V₃</div>
+          <div class="v-name">Variety</div>
+        </div>
+        <div class="v-tap-hint">tap to expand →</div>
+        <div class="v-card-body">
+          <div class="v-card-body-inner">
+            <p>The mix of structured, semi-structured, and unstructured formats — tables, JSON logs, images, free text, audio.</p>
+            <div class="v-example">e.g. a single pipeline ingesting CSVs, tweets, and CCTV footage</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pipeline-section">
+  <div class="wrap">
+    <div class="section-tag">02 / WORKFLOW</div>
+    <h2 class="section-title">The analytics pipeline</h2>
+    <p class="section-desc">Raw data becomes a decision through four stages. Click a stage to see what actually happens there and which tools are typically used.</p>
+
+    <div class="pipeline" id="pipelineGrid">
+      <div class="stage" data-stage="collect">
+        <div class="stage-num">STAGE 01</div>
+        <h4>Collect</h4>
+        <p>Pull data from its source</p>
+      </div>
+      <div class="stage" data-stage="store">
+        <div class="stage-num">STAGE 02</div>
+        <h4>Store</h4>
+        <p>Land it somewhere durable</p>
+      </div>
+      <div class="stage" data-stage="process">
+        <div class="stage-num">STAGE 03</div>
+        <h4>Process</h4>
+        <p>Clean, join, transform</p>
+      </div>
+      <div class="stage" data-stage="analyze">
+        <div class="stage-num">STAGE 04</div>
+        <h4>Analyze</h4>
+        <p>Query, model, visualize</p>
+      </div>
+    </div>
+
+    <div class="pipeline-detail" id="pipelineDetail">
+      <div class="pipeline-detail-tag" id="pdTag">STAGE 01 · COLLECT</div>
+      <h4 id="pdTitle">Collecting raw data</h4>
+      <p id="pdDesc">Data enters the system from APIs, application logs, IoT sensors, or third-party feeds — often continuously, not as a one-time export.</p>
+      <div class="pipeline-tools" id="pdTools"></div>
+    </div>
+  </div>
+</section>
+
+<section id="arch-section">
+  <div class="wrap">
+    <div class="section-tag">03 / ARCHITECTURE</div>
+    <h2 class="section-title">A typical big data stack</h2>
+    <p class="section-desc">Most real systems are layered — each layer trades off durability, speed, and cost differently. Click a layer to expand it.</p>
+
+    <div class="arch-grid" id="archGrid">
+      <div class="arch-layer" data-layer="ingest">
+        <div class="arch-layer-head"><h4>Ingestion Layer</h4><span class="arch-toggle">+</span></div>
+        <div class="arch-layer-body"><p>Brings data in from outside the system, often as continuous streams. Tools like Kafka or Kinesis buffer incoming events so downstream systems aren't overwhelmed by spikes.</p></div>
+      </div>
+      <div class="arch-layer" data-layer="store">
+        <div class="arch-layer-head"><h4>Storage Layer</h4><span class="arch-toggle">+</span></div>
+        <div class="arch-layer-body"><p>Holds raw and processed data cheaply at scale — distributed file systems (HDFS), object storage (S3), or data lakes that don't require a fixed schema up front.</p></div>
+      </div>
+      <div class="arch-layer" data-layer="process">
+        <div class="arch-layer-head"><h4>Processing Layer</h4><span class="arch-toggle">+</span></div>
+        <div class="arch-layer-body"><p>Transforms raw data into something usable — distributed engines like Spark or Flink run computations across many machines in parallel.</p></div>
+      </div>
+      <div class="arch-layer" data-layer="serve">
+        <div class="arch-layer-head"><h4>Serving Layer</h4><span class="arch-toggle">+</span></div>
+        <div class="arch-layer-body"><p>Exposes results to people and applications — dashboards, BI tools, or APIs that let analysts and downstream systems query the processed data.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="quiz-section">
+  <div class="wrap">
+    <div class="section-tag">04 / CHECK YOURSELF</div>
+    <h2 class="section-title">Quick check</h2>
+    <p class="section-desc">One question to confirm the idea stuck.</p>
+
+    <div class="quiz-box">
+      <div class="quiz-q">A hospital wants to flag abnormal heart-rate readings from wearable devices the instant they happen, rather than reviewing them at the end of the day. Which "V" is this primarily about?</div>
+      <div class="quiz-options" id="quizOptions">
+        <div class="quiz-opt" data-correct="false">Volume — there's a lot of patient data</div>
+        <div class="quiz-opt" data-correct="true">Velocity — the data must be acted on immediately</div>
+        <div class="quiz-opt" data-correct="false">Variety — wearables produce many data formats</div>
+      </div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  CLICK THROUGH EACH SECTION ABOVE · NO DATA LEAVES THIS PAGE
+</footer>
+
+<script>
+  // ---- 3 Vs cards ----
+  document.querySelectorAll('.v-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const wasActive = card.classList.contains('active');
+      document.querySelectorAll('.v-card').forEach(c => c.classList.remove('active'));
+      if (!wasActive) card.classList.add('active');
+      markProgress(1);
+    });
+  });
+
+  // ---- Pipeline ----
+  const pipelineData = {
+    collect: {
+      tag: 'STAGE 01 · COLLECT',
+      title: 'Collecting raw data',
+      desc: 'Data enters the system from APIs, application logs, IoT sensors, or third-party feeds — often continuously, not as a one-time export.',
+      tools: ['Kafka', 'Flume', 'REST APIs', 'Webhooks']
+    },
+    store: {
+      tag: 'STAGE 02 · STORE',
+      title: 'Storing it durably',
+      desc: 'Raw data lands in cheap, scalable storage before anyone decides exactly how it will be used — keeping options open for future analysis.',
+      tools: ['HDFS', 'Amazon S3', 'Data Lake', 'NoSQL Stores']
+    },
+    process: {
+      tag: 'STAGE 03 · PROCESS',
+      title: 'Cleaning and transforming',
+      desc: 'Raw records get deduplicated, joined, and reshaped into a structure analysts and models can actually use — this is usually the most compute-heavy stage.',
+      tools: ['Apache Spark', 'Apache Flink', 'dbt', 'MapReduce']
+    },
+    analyze: {
+      tag: 'STAGE 04 · ANALYZE',
+      title: 'Turning data into decisions',
+      desc: 'Processed data is queried, modeled, or visualized — the output here is what a person or downstream system actually acts on.',
+      tools: ['SQL Engines', 'Tableau', 'Jupyter', 'ML Models']
+    }
+  };
+
+  const detailBox = document.getElementById('pipelineDetail');
+  document.querySelectorAll('.stage').forEach(stage => {
+    stage.addEventListener('click', () => {
+      const key = stage.dataset.stage;
+      const wasActive = stage.classList.contains('active');
+      document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+
+      if (wasActive) {
+        detailBox.classList.remove('show');
+        return;
+      }
+      stage.classList.add('active');
+      const d = pipelineData[key];
+      document.getElementById('pdTag').textContent = d.tag;
+      document.getElementById('pdTitle').textContent = d.title;
+      document.getElementById('pdDesc').textContent = d.desc;
+      const toolsEl = document.getElementById('pdTools');
+      toolsEl.innerHTML = '';
+      d.tools.forEach(t => {
+        const chip = document.createElement('span');
+        chip.className = 'tool-chip';
+        chip.textContent = t;
+        toolsEl.appendChild(chip);
+      });
+      detailBox.classList.add('show');
+      markProgress(2);
+    });
+  });
+
+  // ---- Architecture layers ----
+  document.querySelectorAll('.arch-layer').forEach(layer => {
+    layer.addEventListener('click', () => {
+      layer.classList.toggle('active');
+      markProgress(3);
+    });
+  });
+
+  // ---- Quiz ----
+  document.querySelectorAll('.quiz-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      if (document.querySelector('.quiz-opt.correct, .quiz-opt.wrong')) return; // already answered
+      const isCorrect = opt.dataset.correct === 'true';
+      opt.classList.add(isCorrect ? 'correct' : 'wrong');
+      if (!isCorrect) {
+        document.querySelector('.quiz-opt[data-correct="true"]').classList.add('correct');
+      }
+      const fb = document.getElementById('quizFeedback');
+      fb.textContent = isCorrect
+        ? 'Right — this is a velocity problem. The data must be processed in real time, not batched for later.'
+        : 'Not quite — the urgency here is the key signal. This is velocity: the need to act on data the moment it arrives.';
+      fb.classList.add('show');
+      markProgress(4);
+    });
+  });
+
+  function markProgress(stepIndex){
+    const seg = document.querySelector('.progress-seg[data-seg="' + stepIndex + '"]');
+    if (seg) seg.classList.add('done');
+  }
+</script>
+
+</body>
+</html>
