@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Big Data Analytics — Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0f14;
+    --bg-panel:#11171f;
+    --line:#202b37;
+    --line-bright:#2c3a4a;
+    --text:#e7edf3;
+    --text-dim:#8694a3;
+    --cyan:#4fd6e0;
+    --cyan-dim:#1d5a60;
+    --amber:#e8a23a;
+    --magenta:#d9709a;
+    --green:#6fcf97;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  body{
+    background:var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(79,214,224,0.06), transparent 40%),
+      radial-gradient(circle at 85% 100%, rgba(232,162,58,0.05), transparent 40%);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    min-height:100vh;
+  }
+
+  h1,h2{ font-family:'Space Grotesk', sans-serif; font-weight:600; }
+
+  .wrap{ max-width:760px; margin:0 auto; padding:0 24px; }
+
+  .topbar{ border-bottom:1px solid var(--line); padding:18px 0; }
+  .topbar-inner{ display:flex; align-items:center; justify-content:space-between; max-width:760px; margin:0 auto; padding:0 24px; }
+  .logo{ display:flex; align-items:center; gap:10px; font-family:'JetBrains Mono', monospace; font-size:13.5px; color:var(--cyan); }
+  .logo .dot{ width:8px; height:8px; background:var(--cyan); border-radius:50%; box-shadow:0 0 8px var(--cyan); }
+  .score-tag{ font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim); }
+  .score-tag b{ color:var(--text); }
+
+  .hero{ padding:54px 0 38px; }
+  .hero .tag{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--amber); letter-spacing:1.5px; margin-bottom:14px; }
+  .hero h1{ font-size:30px; line-height:1.2; margin-bottom:12px; }
+  .hero p{ color:var(--text-dim); font-size:14.5px; max-width:540px; }
+
+  .progress-bar{
+    height:5px;
+    background:var(--line);
+    border-radius:3px;
+    margin-top:26px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:var(--cyan);
+    border-radius:3px;
+    transition:width 0.3s ease;
+  }
+
+  .quiz-list{ padding-bottom:60px; display:flex; flex-direction:column; gap:22px; }
+
+  .q-card{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:24px 26px;
+  }
+  .q-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+  }
+  .q-num{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--cyan); }
+  .q-topic{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color:var(--text-dim);
+    border:1px solid var(--line-bright);
+    padding:4px 10px;
+    border-radius:14px;
+  }
+  .q-text{ font-size:15.5px; margin-bottom:18px; }
+
+  .opt-list{ display:flex; flex-direction:column; gap:9px; }
+  .opt{
+    background:rgba(255,255,255,0.02);
+    border:1px solid var(--line);
+    border-radius:7px;
+    padding:12px 15px;
+    font-size:14px;
+    cursor:pointer;
+    transition:border-color 0.2s ease, background 0.2s ease;
+    display:flex;
+    gap:10px;
+  }
+  .opt:hover{ border-color:var(--line-bright); }
+  .opt .opt-letter{ font-family:'JetBrains Mono', monospace; color:var(--text-dim); font-size:13px; }
+  .opt.correct{ border-color:var(--green); background:rgba(111,207,151,0.08); }
+  .opt.correct .opt-letter{ color:var(--green); }
+  .opt.wrong{ border-color:var(--magenta); background:rgba(217,112,154,0.08); }
+  .opt.wrong .opt-letter{ color:var(--magenta); }
+  .opt.disabled{ cursor:default; }
+
+  .explain{
+    margin-top:14px;
+    font-size:13.5px;
+    color:var(--text-dim);
+    border-left:2px solid var(--cyan-dim);
+    padding-left:12px;
+    display:none;
+  }
+  .explain.show{ display:block; }
+
+  .results{
+    background:var(--bg-panel);
+    border:1px solid var(--line-bright);
+    border-radius:10px;
+    padding:30px 28px;
+    text-align:center;
+    margin-top:8px;
+    display:none;
+  }
+  .results.show{ display:block; }
+  .results h2{ font-size:24px; margin-bottom:8px; }
+  .results .big-score{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:48px;
+    font-weight:700;
+    color:var(--cyan);
+    margin:14px 0;
+  }
+  .results p{ color:var(--text-dim); font-size:14px; margin-bottom:20px; }
+  .reset-btn{
+    font-family:'JetBrains Mono', monospace;
+    background:none;
+    border:1px solid var(--line-bright);
+    color:var(--text);
+    padding:11px 24px;
+    border-radius:7px;
+    font-size:13.5px;
+    cursor:pointer;
+    transition:border-color 0.2s ease, background 0.2s ease;
+  }
+  .reset-btn:hover{ border-color:var(--cyan); background:rgba(79,214,224,0.06); }
+
+  footer{
+    padding:30px 0 50px;
+    text-align:center;
+    color:var(--text-dim);
+    font-size:12.5px;
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  @media (max-width:600px){
+    .hero h1{ font-size:24px; }
+    .q-card{ padding:20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo"><span class="dot"></span>BIG_DATA.QUIZ</div>
+    <div class="score-tag">Score: <b id="liveScore">0</b> / 10</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="tag">ASSESSMENT · 10 QUESTIONS</div>
+    <h1>Big Data Analytics — Quick Quiz</h1>
+    <p>Covers SQL vs NoSQL, the Hadoop Distributed File System, processing data with Hadoop, and data warehousing in a Hadoop environment. Click an option to answer — each question locks after your first choice.</p>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="quiz-list" id="quizList"></div>
+
+  <div class="results" id="resultsBox">
+    <h2>Quiz complete</h2>
+    <div class="big-score" id="finalScore">0 / 10</div>
+    <p id="finalMsg">Review any explanations above, then try again to lock it in.</p>
+    <button class="reset-btn" id="resetBtn">Retake Quiz</button>
+  </div>
+</div>
+
+<footer>NO DATA LEAVES THIS PAGE · ALL SCORING HAPPENS LOCALLY</footer>
+
+<script>
+  const questions = [
+    {
+      topic: "SQL vs NoSQL",
+      q: "What is the primary structural difference between SQL and NoSQL databases?",
+      options: [
+        "SQL databases require a fixed schema; NoSQL databases allow flexible or schema-less structures",
+        "SQL databases only store numbers; NoSQL databases only store text",
+        "SQL databases cannot be queried; NoSQL databases can only be queried with Python",
+        "NoSQL databases always run faster than SQL databases regardless of workload"
+      ],
+      correct: 0,
+      explain: "SQL (relational) databases enforce a predefined schema with rows and columns, while NoSQL databases support flexible structures like key-value, document, or graph models that can evolve without a fixed schema."
+    },
+    {
+      topic: "SQL vs NoSQL",
+      q: "Which scaling approach is most commonly associated with NoSQL databases?",
+      options: [
+        "Vertical scaling only, by upgrading a single server's hardware",
+        "Horizontal scaling, by adding more servers to a distributed cluster",
+        "No scaling is possible once the database is created",
+        "Scaling is handled exclusively through manual data deletion"
+      ],
+      correct: 1,
+      explain: "NoSQL databases are typically designed to scale horizontally — distributing data across many commodity servers — which suits the large, fast-growing datasets common in big data workloads."
+    },
+    {
+      topic: "SQL vs NoSQL",
+      q: "In which scenario would a traditional SQL database typically be the better choice over NoSQL?",
+      options: [
+        "Storing unstructured social media posts at massive scale",
+        "Applications requiring strict ACID transactions, like banking systems",
+        "Storing rapidly changing sensor data with no fixed structure",
+        "Applications that never need to query relationships between data"
+      ],
+      correct: 1,
+      explain: "SQL databases excel when strong consistency and ACID (Atomicity, Consistency, Isolation, Durability) guarantees are critical, such as financial transactions where data integrity cannot be compromised."
+    },
+    {
+      topic: "HDFS",
+      q: "What does HDFS stand for, and what is its core purpose?",
+      options: [
+        "Hadoop Database File System, used for running SQL queries",
+        "Hadoop Distributed File System, used for storing large files across multiple machines",
+        "Hadoop Data Formatting Service, used for converting file types",
+        "Hardware Disk Filing System, used for managing local disk partitions"
+      ],
+      correct: 1,
+      explain: "HDFS (Hadoop Distributed File System) is designed to store very large files by splitting them into blocks and distributing those blocks across many machines in a cluster."
+    },
+    {
+      topic: "HDFS",
+      q: "In HDFS, what is the role of the NameNode?",
+      options: [
+        "It stores the actual data blocks of files",
+        "It manages the filesystem namespace and metadata, tracking where blocks are stored",
+        "It is responsible for running MapReduce jobs only",
+        "It is a backup copy of the entire dataset stored offline"
+      ],
+      correct: 1,
+      explain: "The NameNode is the master server in HDFS that maintains metadata — file names, permissions, and the mapping of which DataNodes hold which blocks — without storing the actual data itself."
+    },
+    {
+      topic: "HDFS",
+      q: "Why does HDFS replicate each data block across multiple DataNodes by default?",
+      options: [
+        "To make files load faster when opened on a single machine",
+        "To provide fault tolerance, so data isn't lost if a node fails",
+        "To reduce the total storage space required",
+        "Because HDFS cannot function with only one copy of any file"
+      ],
+      correct: 1,
+      explain: "HDFS replicates blocks (typically three copies by default) across different nodes so that if one node fails, the data remains available from another replica, ensuring fault tolerance."
+    },
+    {
+      topic: "Processing Data with Hadoop",
+      q: "What is the primary purpose of the MapReduce programming model in Hadoop?",
+      options: [
+        "To visually design dashboards for end users",
+        "To process large datasets in parallel by splitting work into Map and Reduce phases",
+        "To encrypt data before it is stored in HDFS",
+        "To replace the need for any storage layer entirely"
+      ],
+      correct: 1,
+      explain: "MapReduce splits a large processing task into a Map phase (transforming and filtering data in parallel chunks) and a Reduce phase (aggregating the results), enabling distributed processing across a cluster."
+    },
+    {
+      topic: "Processing Data with Hadoop",
+      q: "Which statement best describes how Hadoop achieves parallel processing?",
+      options: [
+        "It sends the entire dataset to one powerful central server for processing",
+        "It moves computation to where the data already resides across distributed nodes",
+        "It requires all data to be processed sequentially, one record at a time",
+        "It only works if the dataset fits entirely in one machine's RAM"
+      ],
+      correct: 1,
+      explain: "Hadoop follows a 'move computation to the data' principle — rather than transferring huge volumes of data to a processor, it runs processing tasks on the nodes where the data blocks already live, minimizing network overhead."
+    },
+    {
+      topic: "Data Warehousing in Hadoop",
+      q: "What is the primary role of a tool like Apache Hive in a Hadoop environment?",
+      options: [
+        "It provides a SQL-like interface for querying and managing large datasets stored in HDFS",
+        "It physically replaces HDFS as the storage layer",
+        "It is used only for real-time streaming, not batch analytics",
+        "It manages network security for the entire Hadoop cluster"
+      ],
+      correct: 0,
+      explain: "Apache Hive provides a SQL-like query language (HiveQL) on top of Hadoop, letting analysts run familiar SQL-style queries against large datasets stored in HDFS without writing raw MapReduce code."
+    },
+    {
+      topic: "Data Warehousing in Hadoop",
+      q: "How does a Hadoop-based data warehouse typically differ from a traditional data warehouse?",
+      options: [
+        "It can only store data in a fixed relational schema, just like traditional warehouses",
+        "It generally follows a schema-on-read approach and can scale cheaply using commodity hardware",
+        "It cannot integrate with any business intelligence or reporting tools",
+        "It requires significantly more expensive specialized hardware than traditional warehouses"
+      ],
+      correct: 1,
+      explain: "Hadoop-based warehousing typically uses a schema-on-read approach (the structure is applied when data is queried, not when it's stored) and runs on inexpensive, scalable commodity hardware, unlike traditional warehouses that enforce schema-on-write on costly proprietary systems."
+    }
+  ];
+
+  const quizList = document.getElementById('quizList');
+  const progressFill = document.getElementById('progressFill');
+  const liveScore = document.getElementById('liveScore');
+  const resultsBox = document.getElementById('resultsBox');
+  const finalScore = document.getElementById('finalScore');
+  const finalMsg = document.getElementById('finalMsg');
+
+  let answeredCount = 0;
+  let score = 0;
+
+  function buildQuiz(){
+    quizList.innerHTML = '';
+    questions.forEach((item, qIndex) => {
+      const card = document.createElement('div');
+      card.className = 'q-card';
+
+      const letters = ['A','B','C','D'];
+      const optsHtml = item.options.map((opt, oIndex) =>
+        `<div class="opt" data-q="${qIndex}" data-o="${oIndex}">
+          <span class="opt-letter">${letters[oIndex]}</span><span>${opt}</span>
+        </div>`
+      ).join('');
+
+      card.innerHTML = `
+        <div class="q-meta">
+          <span class="q-num">Q${qIndex + 1} / ${questions.length}</span>
+          <span class="q-topic">${item.topic}</span>
+        </div>
+        <div class="q-text">${item.q}</div>
+        <div class="opt-list">${optsHtml}</div>
+        <div class="explain" id="explain-${qIndex}">${item.explain}</div>
+      `;
+      quizList.appendChild(card);
+    });
+
+    document.querySelectorAll('.opt').forEach(opt => {
+      opt.addEventListener('click', handleAnswer);
+    });
+  }
+
+  function handleAnswer(e){
+    const optEl = e.currentTarget;
+    const qIndex = parseInt(optEl.dataset.q);
+    const oIndex = parseInt(optEl.dataset.o);
+    const card = optEl.closest('.q-card');
+    const allOpts = card.querySelectorAll('.opt');
+
+    if (card.dataset.answered === 'true') return;
+    card.dataset.answered = 'true';
+
+    const correctIndex = questions[qIndex].correct;
+    allOpts.forEach(o => o.classList.add('disabled'));
+
+    if (oIndex === correctIndex) {
+      optEl.classList.add('correct');
+      score++;
+    } else {
+      optEl.classList.add('wrong');
+      allOpts[correctIndex].classList.add('correct');
+    }
+
+    document.getElementById('explain-' + qIndex).classList.add('show');
+
+    answeredCount++;
+    liveScore.textContent = score;
+    progressFill.style.width = (answeredCount / questions.length * 100) + '%';
+
+    if (answeredCount === questions.length) {
+      showResults();
+    }
+  }
+
+  function showResults(){
+    finalScore.textContent = score + ' / ' + questions.length;
+    let msg = '';
+    if (score === questions.length) msg = 'Perfect score — these concepts are solid.';
+    else if (score >= questions.length * 0.7) msg = 'Strong grasp overall — review the missed explanations above.';
+    else if (score >= questions.length * 0.4) msg = 'Decent start — revisit HDFS and the SQL vs NoSQL sections.';
+    else msg = 'Worth a re-read of the topics before retaking — review explanations above first.';
+    finalMsg.textContent = msg;
+    resultsBox.classList.add('show');
+    resultsBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    answeredCount = 0;
+    score = 0;
+    liveScore.textContent = 0;
+    progressFill.style.width = '0%';
+    resultsBox.classList.remove('show');
+    buildQuiz();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  buildQuiz();
+</script>
+
+</body>
+</html>
