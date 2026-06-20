@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Big Data & Analytics – Unit 1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Playfair+Display:wght@700&display=swap');
+
+  :root {
+    --bg:        #0b0f1a;
+    --surface:   #111827;
+    --card:      #1a2235;
+    --border:    #243049;
+    --accent:    #00d4ff;
+    --accent2:   #7c3aed;
+    --accent3:   #f59e0b;
+    --text:      #e2e8f0;
+    --muted:     #8898b0;
+    --white:     #ffffff;
+    --green:     #10b981;
+    --red:       #ef4444;
+    --font-main: 'Space Grotesk', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-disp: 'Playfair Display', serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-main);
+    overflow: hidden;
+  }
+
+  /* ── SHELL ── */
+  #shell {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── NAV BAR ── */
+  #topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    gap: 12px;
+  }
+  #topbar .logo {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  #progress-wrap {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    max-width: 400px;
+  }
+  #progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s ease;
+    border-radius: 2px;
+  }
+  #slide-counter {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .nav-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .nav-btn:disabled:hover { background: var(--card); color: var(--text); border-color: var(--border); }
+
+  /* ── SLIDE AREA ── */
+  #slides-viewport {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 40px 60px;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    animation: fadeIn 0.35s ease;
+  }
+  .slide.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── TOC sidebar (slide 1) ── */
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .toc-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .toc-item:hover { border-color: var(--accent); background: #1e2d45; }
+  .toc-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,212,255,0.1);
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .toc-label { font-size: 13px; color: var(--text); font-weight: 500; }
+
+  /* ── SLIDE TYPOGRAPHY ── */
+  .slide-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .slide-title {
+    font-family: var(--font-disp);
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .slide-subtitle {
+    font-size: 1rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+    font-weight: 300;
+  }
+  .hero-title {
+    font-family: var(--font-disp);
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .hero-accent {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card p, .card li {
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.65;
+  }
+  .card ul { padding-left: 18px; }
+  .card li { margin-bottom: 5px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  /* ── HIGHLIGHT BOXES ── */
+  .hl-box {
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .hl-blue  { background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.25); }
+  .hl-purple{ background: rgba(124,58,237,0.1);  border: 1px solid rgba(124,58,237,0.3);  }
+  .hl-amber { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); }
+  .hl-green { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25); }
+  .hl-red   { background: rgba(239,68,68,0.08);  border: 1px solid rgba(239,68,68,0.25);  }
+
+  /* ── V's BADGE ── */
+  .vs-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    margin: 4px;
+  }
+  .v-vol  { background: rgba(0,212,255,0.15); color: var(--accent); border:1px solid var(--accent); }
+  .v-vel  { background: rgba(124,58,237,0.15); color: #a78bfa; border:1px solid #7c3aed; }
+  .v-var  { background: rgba(245,158,11,0.15); color: var(--accent3); border:1px solid var(--accent3); }
+  .v-ver  { background: rgba(16,185,129,0.15); color: var(--green); border:1px solid var(--green); }
+  .v-val  { background: rgba(239,68,68,0.15); color: #fca5a5; border:1px solid var(--red); }
+
+  /* ── COMPARISON TABLE ── */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: var(--card);
+    color: var(--accent);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .flow-node {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    min-width: 100px;
+  }
+  .flow-node.accent { border-color: var(--accent); color: var(--accent); }
+  .flow-node.purple { border-color: #7c3aed; color: #a78bfa; }
+  .flow-node.green  { border-color: var(--green); color: var(--green); }
+  .flow-arrow {
+    font-size: 18px;
+    color: var(--muted);
+    padding: 0 6px;
+  }
+
+  /* ── PILL TAGS ── */
+  .pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    margin: 3px;
+  }
+  .pill-blue   { background: rgba(0,212,255,0.12); color: var(--accent); }
+  .pill-purple { background: rgba(124,58,237,0.12); color: #a78bfa; }
+  .pill-green  { background: rgba(16,185,129,0.12); color: var(--green); }
+  .pill-amber  { background: rgba(245,158,11,0.12); color: var(--accent3); }
+
+  /* ── STAT CARD ── */
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: var(--font-disp);
+    font-size: 2.4rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+  /* ── TIMELINE ── */
+  .timeline { margin-top: 16px; }
+  .tl-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+  .tl-dot-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .tl-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+  .tl-line {
+    width: 2px;
+    flex: 1;
+    background: var(--border);
+    min-height: 20px;
+    margin-top: 4px;
+  }
+  .tl-year {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 60px;
+    margin-top: 2px;
+  }
+  .tl-body { font-size: 13px; color: var(--text); line-height: 1.55; }
+  .tl-body strong { color: var(--white); }
+
+  /* ── BASE diagram ── */
+  .base-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 14px;
+    margin-top: 16px;
+  }
+  .base-card {
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+  }
+  .base-letter {
+    font-family: var(--font-disp);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .base-name { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .base-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+  /* ── TOOL GRID ── */
+  .tool-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .tool-card:hover { border-color: var(--accent); }
+  .tool-icon { font-size: 2rem; margin-bottom: 8px; }
+  .tool-name { font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .tool-desc { font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+
+  /* scrollbar */
+  .slide::-webkit-scrollbar { width: 4px; }
+  .slide::-webkit-scrollbar-track { background: transparent; }
+  .slide::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── SLIDE THUMBNAILS DOT NAV ── */
+  #dot-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .dot.active { background: var(--accent); transform: scale(1.4); }
+
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+  }
+
+  .example-block {
+    background: rgba(0,212,255,0.04);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    font-size: 13px;
+    color: var(--text);
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+  .example-block strong { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div id="shell">
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div class="logo">BIG DATA &amp; ANALYTICS · UNIT 1</div>
+    <div id="progress-wrap"><div id="progress-bar"></div></div>
+    <div id="slide-counter">1 / 18</div>
+    <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" disabled>← Prev</button>
+    <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+  </div>
+
+  <!-- SLIDES VIEWPORT -->
+  <div id="slides-viewport">
+
+    <!-- ══════════════════════════════ SLIDE 1: COVER ══════════════════════════════ -->
+    <div class="slide active" id="s1">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+        <div class="slide-tag">Unit 1 · Introduction</div>
+        <div class="hero-title">Introduction to<br><span class="hero-accent">Big Data</span><br>&amp; Analytics</div>
+        <p style="font-size:15px;color:var(--muted);max-width:520px;line-height:1.7;margin-bottom:32px;">
+          From digital data classification to Hadoop ecosystems — a complete visual walkthrough of Unit 1 syllabus.
+        </p>
+        <div class="grid-4" style="max-width:720px;">
+          <div class="stat-card"><div class="stat-num">5V</div><div class="stat-label">Big Data Characteristics</div></div>
+          <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Analytics Categories</div></div>
+          <div class="stat-card"><div class="stat-num">BASE</div><div class="stat-label">Consistency Model</div></div>
+          <div class="stat-card"><div class="stat-num">10+</div><div class="stat-label">Top Analytics Tools</div></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="slide-tag" style="margin-bottom:12px;">Topics Covered</div>
+        <div class="toc-grid">
+          <div class="toc-item" onclick="goSlide(2)"><span class="toc-num">01</span><span class="toc-label">Classification of Digital Data</span></div>
+          <div class="toc-item" onclick="goSlide(3)"><span class="toc-num">02</span><span class="toc-label">Structured vs Unstructured</span></div>
+          <div class="toc-item" onclick="goSlide(4)"><span class="toc-num">03</span><span class="toc-label">Big Data: Intro &amp; Evolution</span></div>
+          <div class="toc-item" onclick="goSlide(5)"><span class="toc-num">04</span><span class="toc-label">5 V's of Big Data</span></div>
+          <div class="toc-item" onclick="goSlide(6)"><span class="toc-num">05</span><span class="toc-label">Challenges with Big Data</span></div>
+          <div class="toc-item" onclick="goSlide(7)"><span class="toc-num">06</span><span class="toc-label">Why Big Data?</span></div>
+          <div class="toc-item" onclick="goSlide(8)"><span class="toc-num">07</span><span class="toc-label">BI vs Big Data</span></div>
+          <div class="toc-item" onclick="goSlide(9)"><span class="toc-num">08</span><span class="toc-label">Data Warehouse &amp; Hadoop</span></div>
+          <div class="toc-item" onclick="goSlide(10)"><span class="toc-num">09</span><span class="toc-label">Classification of Analytics</span></div>
+          <div class="toc-item" onclick="goSlide(12)"><span class="toc-num">10</span><span class="toc-label">Data Science &amp; Data Scientist</span></div>
+          <div class="toc-item" onclick="goSlide(14)"><span class="toc-num">11</span><span class="toc-label">BASE Consistency Model</span></div>
+          <div class="toc-item" onclick="goSlide(15)"><span class="toc-num">12</span><span class="toc-label">Big Data Terminologies</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 2: Classification of Digital Data ══════ -->
+    <div class="slide" id="s2">
+      <div class="slide-tag">Topic 01</div>
+      <div class="slide-title">Classification of Digital Data</div>
+      <div class="slide-subtitle">Data exists in multiple forms — each with distinct storage and processing needs.</div>
+
+      <div class="grid-3" style="margin-bottom:16px;">
+        <div class="card" style="border-top:3px solid var(--accent);">
+          <div class="card-title">📊 Structured Data</div>
+          <p>Organized in a fixed schema — rows and columns. Easy to query with SQL.</p>
+          <div class="example-block"><strong>Examples:</strong> RDBMS tables, Excel spreadsheets, bank transaction records, student grade sheets.</div>
+        </div>
+        <div class="card" style="border-top:3px solid #7c3aed;">
+          <div class="card-title">📄 Semi-Structured</div>
+          <p>Has some organizational properties (tags/markers) but no strict schema.</p>
+          <div class="example-block"><strong>Examples:</strong> JSON files, XML documents, email (headers + body), CSV files, HTML pages.</div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--accent3);">
+          <div class="card-title">🎵 Unstructured Data</div>
+          <p>No predefined model or schema. Cannot be stored in rows/columns directly.</p>
+          <div class="example-block"><strong>Examples:</strong> Images, videos, audio files, social media posts, PDFs, sensor logs.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">📈 Data Volume Distribution (Approximate Global Data)</div>
+        <div style="display:flex;gap:0;margin-top:12px;border-radius:8px;overflow:hidden;height:36px;">
+          <div style="width:20%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--bg);">Structured 20%</div>
+          <div style="width:10%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;">Semi 10%</div>
+          <div style="width:70%;background:var(--accent3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--bg);">Unstructured 70% of all enterprise data</div>
+        </div>
+      </div>
+
+      <div class="hl-box hl-blue">
+        <strong style="color:var(--accent);">Key Insight:</strong> Over 80% of the world's data is unstructured, which is why Big Data tools like Hadoop were designed — traditional RDBMS cannot handle it.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 3: Structured vs Unstructured ══════════ -->
+    <div class="slide" id="s3">
+      <div class="slide-tag">Topic 02</div>
+      <div class="slide-title">Structured vs Unstructured Data</div>
+      <div class="slide-subtitle">A detailed comparison of the two dominant data types.</div>
+
+      <table style="margin-bottom:18px;">
+        <tr>
+          <th>Parameter</th>
+          <th>Structured Data</th>
+          <th>Unstructured Data</th>
+        </tr>
+        <tr><td>Format</td><td>Fixed schema, rows &amp; columns</td><td>No fixed format</td></tr>
+        <tr><td>Storage</td><td>RDBMS (MySQL, Oracle)</td><td>Data Lakes, NoSQL, Hadoop HDFS</td></tr>
+        <tr><td>Query Language</td><td>SQL</td><td>MapReduce, Hive, Pig, Spark</td></tr>
+        <tr><td>Scalability</td><td>Limited (vertical scaling)</td><td>Highly scalable (horizontal)</td></tr>
+        <tr><td>Analysis</td><td>Easy — reports, dashboards</td><td>Complex — NLP, CV, ML needed</td></tr>
+        <tr><td>Examples</td><td>Bank DB, HR System, ERP</td><td>Tweets, CCTV footage, emails</td></tr>
+        <tr><td>Volume</td><td>~20% of enterprise data</td><td>~80% of enterprise data</td></tr>
+      </table>
+
+      <div class="grid-2">
+        <div class="hl-box hl-purple">
+          <strong style="color:#a78bfa;">Semi-Structured Deep Dive</strong><br><br>
+          Semi-structured data acts as a bridge. For example, a <em>JSON document</em> from Twitter's API has fields (structured aspect) but the tweet text itself is unstructured text. NoSQL databases like MongoDB handle such data natively.
+        </div>
+        <div class="card">
+          <div class="card-title">Real-World Use Case</div>
+          <ul>
+            <li><strong>E-commerce:</strong> Order table = Structured; product reviews = Unstructured</li>
+            <li><strong>Healthcare:</strong> Patient ID/DOB = Structured; doctor notes = Unstructured</li>
+            <li><strong>Banking:</strong> Transactions = Structured; customer calls = Unstructured</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 4: Big Data Intro & Evolution ═══════════ -->
+    <div class="slide" id="s4">
+      <div class="slide-tag">Topic 03</div>
+      <div class="slide-title">Introduction to Big Data</div>
+      <div class="slide-subtitle">Definition, Origins and Evolution of the concept.</div>
+
+      <div class="grid-2" style="margin-bottom:16px;">
+        <div>
+          <div class="card" style="margin-bottom:14px;">
+            <div class="card-title">📖 Definition</div>
+            <p>Big Data refers to datasets that are <strong>too large, fast, or complex</strong> to be processed using traditional database tools. It involves the capture, storage, analysis and visualization of massive data sets.</p>
+          </div>
+          <div class="hl-box hl-amber">
+            <strong style="color:var(--accent3);">Doug Laney (2001) — Gartner</strong><br>
+            First coined the <em>3 Vs</em> model: <strong>Volume, Velocity, Variety</strong> — the foundational definition of Big Data that is still used today.
+          </div>
+        </div>
+        <div>
+          <div class="slide-tag" style="margin-bottom:8px;">Evolution Timeline</div>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+              <div><div class="tl-year">1990s</div><div class="tl-body"><strong>Data Warehousing Era</strong> — enterprises begin storing historical data for reporting.</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:#7c3aed;"></div><div class="tl-line"></div></div>
+              <div><div class="tl-year">2001</div><div class="tl-body"><strong>3 Vs coined</strong> by Doug Laney at Gartner META Group.</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--accent3);"></div><div class="tl-line"></div></div>
+              <div><div class="tl-year">2004</div><div class="tl-body"><strong>Google publishes MapReduce paper</strong> — foundation for parallel processing of large data.</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--green);"></div><div class="tl-line"></div></div>
+              <div><div class="tl-year">2006</div><div class="tl-body"><strong>Apache Hadoop launched</strong> (Yahoo!) — open-source big data framework for distributed storage and processing.</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--red);"></div><div class="tl-line"></div></div>
+              <div><div class="tl-year">2010s</div><div class="tl-body"><strong>Cloud Big Data era</strong> — AWS, Azure, GCP offer managed big data services. Spark, Kafka, NoSQL rise.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 5: 5 V's ════════════════════════════════ -->
+    <div class="slide" id="s5">
+      <div class="slide-tag">Topic 04</div>
+      <div class="slide-title">Characteristics of Big Data — The 5 V's</div>
+      <div class="slide-subtitle">The defining properties that distinguish Big Data from traditional data.</div>
+
+      <div class="grid-3" style="margin-bottom:16px;">
+        <div class="card" style="border-left:4px solid var(--accent);">
+          <div class="card-title"><span class="vs-badge v-vol">Volume</span></div>
+          <p>The sheer <strong>scale</strong> of data generated. Big Data is measured in Petabytes, Exabytes, Zettabytes.</p>
+          <div class="example-block"><strong>Example:</strong> Facebook generates ~4 petabytes of data per day. Google processes ~100 petabytes/day with MapReduce.</div>
+        </div>
+        <div class="card" style="border-left:4px solid #7c3aed;">
+          <div class="card-title"><span class="vs-badge v-vel">Velocity</span></div>
+          <p>The <strong>speed</strong> at which data is generated, collected and processed. Real-time vs batch processing.</p>
+          <div class="example-block"><strong>Example:</strong> Twitter produces ~6,000 tweets/second. Stock market feeds process millions of ticks per second.</div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--accent3);">
+          <div class="card-title"><span class="vs-badge v-var">Variety</span></div>
+          <p>Data comes in multiple <strong>formats</strong> — structured tables, JSON, videos, images, audio, logs.</p>
+          <div class="example-block"><strong>Example:</strong> A hospital has patient records (structured), MRI scans (images), doctor dictations (audio), and lab PDFs.</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="border-left:4px solid var(--green);">
+          <div class="card-title"><span class="vs-badge v-ver">Veracity</span></div>
+          <p>The <strong>quality and trustworthiness</strong> of data. Data can be uncertain, noisy or inconsistent.</p>
+          <div class="example-block"><strong>Example:</strong> Social media data has fake profiles, duplicate entries, missing fields. Sensor data may have errors due to hardware faults.</div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--red);">
+          <div class="card-title"><span class="vs-badge v-val">Value</span></div>
+          <p>The <strong>usefulness</strong> of the data — raw data alone means nothing without deriving insights.</p>
+          <div class="example-block"><strong>Example:</strong> Netflix analyzing user watch history to recommend content → increases viewer engagement → $1B+ savings in churn.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 6: Challenges ════════════════════════════ -->
+    <div class="slide" id="s6">
+      <div class="slide-tag">Topic 05</div>
+      <div class="slide-title">Challenges with Big Data</div>
+      <div class="slide-subtitle">Key obstacles organizations face when dealing with massive datasets.</div>
+
+      <div class="grid-3" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-title">🗄️ Storage</div>
+          <p>Storing petabytes of data cost-effectively. Traditional RDBMS can't scale horizontally.</p>
+          <div class="example-block"><strong>Solution:</strong> HDFS (Hadoop Distributed File System), Amazon S3, Azure Data Lake.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚡ Processing Speed</div>
+          <p>Processing real-time streams fast enough to be actionable (latency problem).</p>
+          <div class="example-block"><strong>Solution:</strong> Apache Spark (in-memory), Apache Flink for real-time stream processing.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔒 Privacy &amp; Security</div>
+          <p>Sensitive data (medical, financial) must be protected. GDPR/data regulations apply.</p>
+          <div class="example-block"><strong>Solution:</strong> Data masking, encryption at rest/transit, role-based access control.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🧹 Data Quality</div>
+          <p>Dirty data, missing values, duplicates — "garbage in, garbage out" problem.</p>
+          <div class="example-block"><strong>Solution:</strong> ETL pipelines, data cleansing tools (Apache Griffin, Talend).</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🧠 Talent Gap</div>
+          <p>Shortage of data engineers and scientists who can work with Big Data stacks.</p>
+          <div class="example-block"><strong>Example:</strong> McKinsey (2018) projected a shortage of 1.5 million data-savvy managers in the US alone.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">💰 Cost</div>
+          <p>Infrastructure, cloud costs, licensing, and skilled labor make Big Data expensive to implement.</p>
+          <div class="example-block"><strong>Solution:</strong> Open-source tools (Hadoop, Spark) and cloud pay-as-you-go models reduce costs.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 7: Why Big Data ══════════════════════════ -->
+    <div class="slide" id="s7">
+      <div class="slide-tag">Topic 06</div>
+      <div class="slide-title">Why Big Data?</div>
+      <div class="slide-subtitle">The business and technological drivers that make Big Data essential.</div>
+
+      <div class="grid-2" style="margin-bottom:16px;">
+        <div>
+          <div class="card" style="margin-bottom:14px;">
+            <div class="card-title">📱 Explosion of Data Sources</div>
+            <ul>
+              <li>Social media: 500M+ tweets/day, 100B+ Instagram photos shared yearly</li>
+              <li>IoT devices: 15 billion+ connected devices generating sensor data</li>
+              <li>Mobile: 6.8 billion smartphone subscriptions globally</li>
+              <li>Web logs, click-streams, e-commerce transactions</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">💼 Business Benefits</div>
+            <ul>
+              <li><strong>Customer personalization</strong> — Amazon's recommendation engine drives 35% of revenue</li>
+              <li><strong>Fraud detection</strong> — Real-time pattern analysis in banking</li>
+              <li><strong>Predictive maintenance</strong> — GE reduces downtime using sensor Big Data</li>
+              <li><strong>Supply chain optimization</strong> — Walmart analyzes 1M+ transactions/hour</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="grid-2" style="margin-bottom:12px;">
+            <div class="stat-card"><div class="stat-num">2.5QB</div><div class="stat-label">Data created daily worldwide (quintillion bytes)</div></div>
+            <div class="stat-card"><div class="stat-num">90%</div><div class="stat-label">Of world's data created in last 2 years</div></div>
+            <div class="stat-card"><div class="stat-num">$684B</div><div class="stat-label">Global Big Data market value by 2030</div></div>
+            <div class="stat-card"><div class="stat-num">40×</div><div class="stat-label">Data growth rate vs traditional IT</div></div>
+          </div>
+          <div class="hl-box hl-green">
+            <strong style="color:var(--green);">Other Data Characteristics (beyond 5 Vs):</strong><br><br>
+            <span class="pill pill-blue">Variability</span> — data meaning changes over time<br>
+            <span class="pill pill-purple">Visualization</span> — complex data needs charts/graphs<br>
+            <span class="pill pill-green">Viscosity</span> — resistance to data flow in pipelines<br>
+            <span class="pill pill-amber">Virality</span> — speed at which data spreads across networks
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 8: BI vs Big Data ═══════════════════════ -->
+    <div class="slide" id="s8">
+      <div class="slide-tag">Topic 07</div>
+      <div class="slide-title">Traditional BI vs Big Data Analytics</div>
+      <div class="slide-subtitle">Understanding how Big Data analytics differs from traditional Business Intelligence.</div>
+
+      <table style="margin-bottom:18px;">
+        <tr>
+          <th>Dimension</th>
+          <th>Traditional BI</th>
+          <th>Big Data Analytics</th>
+        </tr>
+        <tr><td>Data Type</td><td>Structured only</td><td>Structured + Semi + Unstructured</td></tr>
+        <tr><td>Data Volume</td><td>GB to low TB</td><td>Petabytes to Zettabytes</td></tr>
+        <tr><td>Processing</td><td>Batch, nightly ETL</td><td>Real-time &amp; batch (Spark, Flink)</td></tr>
+        <tr><td>Storage</td><td>RDBMS, Data Warehouse</td><td>HDFS, NoSQL, Cloud Data Lakes</td></tr>
+        <tr><td>Analysis Type</td><td>Descriptive (what happened)</td><td>Descriptive + Predictive + Prescriptive</td></tr>
+        <tr><td>Latency</td><td>Hours to days</td><td>Milliseconds to seconds</td></tr>
+        <tr><td>Technology</td><td>SQL, Cognos, Business Objects</td><td>Hadoop, Spark, Kafka, Hive</td></tr>
+        <tr><td>Users</td><td>Business analysts, managers</td><td>Data scientists, ML engineers</td></tr>
+        <tr><td>Cost</td><td>High licensing (SAP, Oracle)</td><td>Open-source; cloud pay-as-you-go</td></tr>
+      </table>
+
+      <div class="hl-box hl-purple">
+        <strong style="color:#a78bfa;">Example:</strong> A retail bank using traditional BI generates monthly sales reports (descriptive). With Big Data Analytics, the same bank can detect fraudulent transactions <em>in real-time</em> and predict which customers are likely to churn — then act on it immediately.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 9: Data Warehouse & Hadoop ═════════════ -->
+    <div class="slide" id="s9">
+      <div class="slide-tag">Topic 08</div>
+      <div class="slide-title">Data Warehouse vs Hadoop Environment</div>
+      <div class="slide-subtitle">Two paradigms for large-scale data storage and analysis.</div>
+
+      <div class="grid-2" style="margin-bottom:16px;">
+        <div class="card" style="border-top:3px solid var(--accent);">
+          <div class="card-title">🏛️ Data Warehouse</div>
+          <ul>
+            <li>Centralized repository for <strong>structured, historical data</strong></li>
+            <li>Schema-on-write: schema defined before loading</li>
+            <li>OLAP (Online Analytical Processing) based</li>
+            <li>Tools: Teradata, Oracle DW, Amazon Redshift, Snowflake</li>
+            <li>Best for: BI reports, compliance, financial analysis</li>
+          </ul>
+          <div class="flow" style="margin-top:14px;">
+            <div class="flow-node accent">Sources</div><div class="flow-arrow">→</div>
+            <div class="flow-node">ETL</div><div class="flow-arrow">→</div>
+            <div class="flow-node">DW</div><div class="flow-arrow">→</div>
+            <div class="flow-node">Reports</div>
+          </div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--accent3);">
+          <div class="card-title">🐘 Hadoop Ecosystem</div>
+          <ul>
+            <li>Distributed storage &amp; processing across commodity hardware</li>
+            <li>Schema-on-read: flexibility for any data format</li>
+            <li>Core: <strong>HDFS</strong> (storage) + <strong>MapReduce/YARN</strong> (processing)</li>
+            <li>Ecosystem: Hive, Pig, HBase, Spark, Kafka, Oozie, ZooKeeper</li>
+            <li>Best for: large-scale ML, log analysis, clickstream data</li>
+          </ul>
+          <div class="flow" style="margin-top:14px;">
+            <div class="flow-node accent">Raw Data</div><div class="flow-arrow">→</div>
+            <div class="flow-node">HDFS</div><div class="flow-arrow">→</div>
+            <div class="flow-node purple">MapReduce</div><div class="flow-arrow">→</div>
+            <div class="flow-node green">Insights</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hl-box hl-blue">
+        <strong style="color:var(--accent);">Hadoop Core Components:</strong>
+        <span class="pill pill-blue">HDFS — Distributed Storage</span>
+        <span class="pill pill-purple">YARN — Resource Management</span>
+        <span class="pill pill-green">MapReduce — Processing Engine</span>
+        <span class="pill pill-amber">Hive — SQL on Hadoop</span>
+        <span class="pill pill-blue">HBase — NoSQL on HDFS</span>
+        <span class="pill pill-purple">Pig — Data Flow Language</span>
+        <span class="pill pill-green">Spark — In-memory Engine</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 10: Analytics Classification ════════════ -->
+    <div class="slide" id="s10">
+      <div class="slide-tag">Topic 09</div>
+      <div class="slide-title">Classification of Analytics</div>
+      <div class="slide-subtitle">The four levels of analytics — from description to prescription.</div>
+
+      <div class="grid-4" style="margin-bottom:16px;">
+        <div class="card" style="border-top:3px solid var(--accent);">
+          <div class="card-title">1️⃣ Descriptive</div>
+          <p style="font-size:12.5px;">"<strong>What happened?</strong>"<br>Summarizes historical data.</p>
+          <div class="example-block"><strong>Example:</strong> Monthly sales report showing revenue by region.</div>
+          <br><span class="pill pill-blue">SQL</span><span class="pill pill-blue">Excel</span><span class="pill pill-blue">Tableau</span>
+        </div>
+        <div class="card" style="border-top:3px solid #7c3aed;">
+          <div class="card-title">2️⃣ Diagnostic</div>
+          <p style="font-size:12.5px;">"<strong>Why did it happen?</strong>"<br>Root cause analysis.</p>
+          <div class="example-block"><strong>Example:</strong> Sales dropped in Q3 — drill-down shows product recall in July caused it.</div>
+          <br><span class="pill pill-purple">OLAP</span><span class="pill pill-purple">Drill-down</span>
+        </div>
+        <div class="card" style="border-top:3px solid var(--accent3);">
+          <div class="card-title">3️⃣ Predictive</div>
+          <p style="font-size:12.5px;">"<strong>What will happen?</strong>"<br>Forecasting with ML models.</p>
+          <div class="example-block"><strong>Example:</strong> Credit scoring model predicts customer loan default probability.</div>
+          <br><span class="pill pill-amber">ML</span><span class="pill pill-amber">R/Python</span>
+        </div>
+        <div class="card" style="border-top:3px solid var(--green);">
+          <div class="card-title">4️⃣ Prescriptive</div>
+          <p style="font-size:12.5px;">"<strong>What should we do?</strong>"<br>Recommends optimal actions.</p>
+          <div class="example-block"><strong>Example:</strong> Dynamic pricing engine adjusts Uber fare in real-time based on supply/demand.</div>
+          <br><span class="pill pill-green">AI</span><span class="pill pill-green">Optimization</span>
+        </div>
+      </div>
+
+      <div class="hl-box hl-blue">
+        <strong style="color:var(--accent);">Maturity Ladder:</strong> Organizations typically start with Descriptive analytics and progressively adopt Predictive and Prescriptive as they build their data infrastructure and talent.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 11: Analytics Challenges ════════════════ -->
+    <div class="slide" id="s11">
+      <div class="slide-tag">Topic 09b</div>
+      <div class="slide-title">Big Data Analytics — Challenges &amp; Importance</div>
+      <div class="slide-subtitle">Why analytics is hard, and why it matters more than ever.</div>
+
+      <div class="grid-2" style="margin-bottom:16px;">
+        <div>
+          <div class="card" style="margin-bottom:14px;">
+            <div class="card-title">⚠️ Challenges in Big Data Analytics</div>
+            <ul>
+              <li><strong>Data heterogeneity</strong> — combining structured + unstructured data is hard</li>
+              <li><strong>Scalability</strong> — models trained on terabytes need distributed computing</li>
+              <li><strong>Real-time analysis</strong> — low-latency processing for time-critical decisions</li>
+              <li><strong>Data governance</strong> — who owns the data, lineage, compliance</li>
+              <li><strong>Interpretability</strong> — complex ML models are black boxes</li>
+              <li><strong>Infrastructure cost</strong> — GPU clusters, cloud costs escalate</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎯 Why Big Data Analytics is Important</div>
+          <ul>
+            <li><strong>Healthcare:</strong> Genomic data analysis enables personalized medicine</li>
+            <li><strong>Finance:</strong> Real-time fraud detection saves billions annually</li>
+            <li><strong>Retail:</strong> Recommendation engines increase sales by 20-35%</li>
+            <li><strong>Government:</strong> Smart city traffic optimization reduces congestion by 30%</li>
+            <li><strong>Manufacturing:</strong> Predictive maintenance reduces downtime by 45%</li>
+            <li><strong>Agriculture:</strong> Crop yield prediction using satellite + weather data</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hl-box hl-amber">
+        <strong style="color:var(--accent3);">Gartner's Hype Cycle Insight:</strong> Big Data analytics has moved past the "Peak of Inflated Expectations" into the "Plateau of Productivity" — meaning real ROI is now measurable in mature deployments across industries.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 12: Data Science & Scientist ════════════ -->
+    <div class="slide" id="s12">
+      <div class="slide-tag">Topic 10</div>
+      <div class="slide-title">Data Science &amp; The Data Scientist</div>
+      <div class="slide-subtitle">The interdisciplinary field at the heart of Big Data analytics.</div>
+
+      <div class="grid-2" style="margin-bottom:16px;">
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-title">🔬 What is Data Science?</div>
+          <p>Data Science is an <strong>interdisciplinary field</strong> combining statistics, computer science, and domain expertise to extract actionable insights from data using scientific methods, algorithms, and systems.</p>
+          <hr class="divider">
+          <div class="card-title">Data Science Process (CRISP-DM)</div>
+          <div class="flow" style="flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="flow-node accent" style="font-size:11.5px;min-width:160px;">Business Understanding</div>
+              <span style="color:var(--muted);font-size:12px;">Define the problem</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="flow-node" style="font-size:11.5px;min-width:160px;">Data Collection</div>
+              <span style="color:var(--muted);font-size:12px;">Gather relevant data</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="flow-node" style="font-size:11.5px;min-width:160px;">Data Preparation</div>
+              <span style="color:var(--muted);font-size:12px;">Clean, transform, EDA</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="flow-node purple" style="font-size:11.5px;min-width:160px;">Modelling</div>
+              <span style="color:var(--muted);font-size:12px;">Build ML/DL models</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="flow-node green" style="font-size:11.5px;min-width:160px;">Evaluation &amp; Deployment</div>
+              <span style="color:var(--muted);font-size:12px;">Validate &amp; go live</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:14px;">
+            <div class="card-title">👩‍💻 Who is a Data Scientist?</div>
+            <p style="margin-bottom:10px;">A <strong>Data Scientist</strong> is someone who collects, analyzes, and interprets large datasets using statistics, programming, and ML to solve complex business problems.</p>
+            <div class="card-title">Required Skills</div>
+            <span class="pill pill-blue">Statistics &amp; Probability</span>
+            <span class="pill pill-purple">Python / R</span>
+            <span class="pill pill-green">Machine Learning</span>
+            <span class="pill pill-amber">SQL &amp; NoSQL</span>
+            <span class="pill pill-blue">Data Visualization</span>
+            <span class="pill pill-purple">Hadoop / Spark</span>
+            <span class="pill pill-green">Domain Expertise</span>
+            <span class="pill pill-amber">Communication</span>
+          </div>
+          <div class="hl-box hl-purple">
+            <strong style="color:#a78bfa;">HBR (2012):</strong> Harvard Business Review called Data Scientist "the sexiest job of the 21st century." The average US salary for a Data Scientist is $130,000/year (BLS 2024).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 13: Terminologies ═══════════════════════ -->
+    <div class="slide" id="s13">
+      <div class="slide-tag">Topic 11</div>
+      <div class="slide-title">Key Terminologies in Big Data</div>
+      <div class="slide-subtitle">Essential vocabulary every Big Data practitioner must know.</div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🗺️ MapReduce</div>
+          <p>A programming model for processing large datasets in parallel across a cluster. <strong>Map</strong> phase filters/sorts; <strong>Reduce</strong> phase aggregates results.</p>
+          <div class="example-block"><strong>Example:</strong> Counting word frequency in 1TB of web pages.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📁 HDFS</div>
+          <p><strong>Hadoop Distributed File System</strong> — stores files across multiple machines with replication (default 3× copies) for fault tolerance.</p>
+          <div class="example-block"><strong>Example:</strong> A 1GB file split into 128MB blocks stored across 8 DataNodes.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚡ Apache Spark</div>
+          <p>In-memory distributed computing engine — 100× faster than MapReduce. Supports batch, streaming, ML (MLlib), graph processing.</p>
+          <div class="example-block"><strong>Example:</strong> Real-time clickstream analytics for e-commerce.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🗄️ NoSQL Database</div>
+          <p>Non-relational DBs designed for horizontal scaling. Types: Document (MongoDB), Key-Value (Redis), Column (Cassandra), Graph (Neo4j).</p>
+          <div class="example-block"><strong>Example:</strong> Instagram uses Cassandra to store billions of photos metadata.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🌊 Data Lake</div>
+          <p>A centralized repository storing raw data in its <strong>native format</strong> until needed — unlike data warehouse which stores processed data.</p>
+          <div class="example-block"><strong>Example:</strong> Netflix's AWS S3 data lake stores raw streaming logs, then processes on demand.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔄 ETL vs ELT</div>
+          <p><strong>ETL</strong>: Extract → Transform → Load (traditional). <strong>ELT</strong>: Extract → Load → Transform (modern Big Data approach — transform in the data lake).</p>
+          <div class="example-block"><strong>Example:</strong> Snowflake uses ELT; data loaded raw, transformed with SQL later.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 14: BASE ═════════════════════════════════ -->
+    <div class="slide" id="s14">
+      <div class="slide-tag">Topic 12</div>
+      <div class="slide-title">BASE — Consistency Model for Big Data</div>
+      <div class="slide-subtitle">The alternative to ACID for distributed, scalable NoSQL systems.</div>
+
+      <div class="base-grid" style="margin-bottom:18px;">
+        <div class="base-card" style="background:rgba(0,212,255,0.07);border:1px solid rgba(0,212,255,0.25);">
+          <div class="base-letter" style="color:var(--accent);">B</div>
+          <div class="base-name" style="color:var(--accent);">Basically Available</div>
+          <div class="base-desc">The system <strong>guarantees availability</strong> — it responds to every request, even if some nodes are down. It may return stale or partial data rather than failing.</div>
+          <div class="example-block" style="margin-top:10px;"><strong>Example:</strong> Amazon's shopping cart is always available, even if one data center is down.</div>
+        </div>
+        <div class="base-card" style="background:rgba(124,58,237,0.07);border:1px solid rgba(124,58,237,0.3);">
+          <div class="base-letter" style="color:#a78bfa;">S</div>
+          <div class="base-name" style="color:#a78bfa;">Soft State</div>
+          <div class="base-desc">The state of the system <strong>may change over time</strong>, even without input. Data is not guaranteed to be consistent at every moment — it is "soft" or flexible.</div>
+          <div class="example-block" style="margin-top:10px;"><strong>Example:</strong> Facebook "likes" count may differ by seconds across data centers as updates propagate.</div>
+        </div>
+        <div class="base-card" style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.25);">
+          <div class="base-letter" style="color:var(--green);">E</div>
+          <div class="base-name" style="color:var(--green);">Eventual Consistency</div>
+          <div class="base-desc">Given enough time <strong>without new updates</strong>, all replicas of data will converge to the same value. Consistency is eventual, not immediate.</div>
+          <div class="example-block" style="margin-top:10px;"><strong>Example:</strong> DNS updates propagate globally — all servers will eventually show the same IP, though it takes time.</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="hl-box hl-amber">
+          <strong style="color:var(--accent3);">ACID vs BASE</strong><br>
+          <strong>ACID</strong> (traditional RDBMS): Atomicity, Consistency, Isolation, Durability — strict, safe, but not scalable.<br>
+          <strong>BASE</strong> (NoSQL/Big Data): Trades strong consistency for <em>availability and scalability</em> — suitable for web-scale systems.
+        </div>
+        <div class="card">
+          <div class="card-title">Systems Using BASE</div>
+          <ul>
+            <li><strong>Apache Cassandra</strong> — tunable consistency levels</li>
+            <li><strong>Amazon DynamoDB</strong> — eventually consistent reads</li>
+            <li><strong>CouchDB</strong> — multi-master replication</li>
+            <li><strong>Riak</strong> — distributed key-value store</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 15: More Terminologies ══════════════════ -->
+    <div class="slide" id="s15">
+      <div class="slide-tag">Topic 13</div>
+      <div class="slide-title">More Big Data Terminologies</div>
+      <div class="slide-subtitle">Important concepts and terms used in the Big Data ecosystem.</div>
+      <div class="grid-3">
+        <div class="card"><div class="card-title">📡 CAP Theorem</div><p>A distributed system can only guarantee 2 of 3: <strong>Consistency, Availability, Partition Tolerance</strong>. BASE systems prioritize A+P.</p></div>
+        <div class="card"><div class="card-title">🌊 Apache Kafka</div><p>Distributed <strong>message streaming platform</strong>. Producers publish events, consumers read in real-time. Used for log aggregation, stream processing.</p><div class="example-block"><strong>Example:</strong> LinkedIn processes 1 trillion events/day using Kafka.</div></div>
+        <div class="card"><div class="card-title">🐝 Apache Hive</div><p>Data warehouse infrastructure on Hadoop. Provides <strong>SQL-like querying (HiveQL)</strong> on HDFS data. Best for batch analytics.</p></div>
+        <div class="card"><div class="card-title">🐷 Apache Pig</div><p>High-level scripting platform (Pig Latin language) for analyzing large datasets on Hadoop. Converts scripts to MapReduce jobs.</p></div>
+        <div class="card"><div class="card-title">🏪 Data Mart</div><p>A subset of a data warehouse focused on a <strong>specific business function</strong> (e.g., sales data mart, HR data mart). Smaller and faster.</p></div>
+        <div class="card"><div class="card-title">📊 OLAP</div><p><strong>Online Analytical Processing</strong> — multi-dimensional data analysis. Supports drill-down, roll-up, slice, dice operations. Enables complex BI queries.</p></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 16: Top Analytics Tools ════════════════ -->
+    <div class="slide" id="s16">
+      <div class="slide-tag">Topic 14</div>
+      <div class="slide-title">Top Analytics Tools</div>
+      <div class="slide-subtitle">The leading platforms and frameworks in the Big Data analytics ecosystem.</div>
+
+      <div class="grid-4" style="margin-bottom:14px;">
+        <div class="tool-card"><div class="tool-icon">🐘</div><div class="tool-name">Apache Hadoop</div><div class="tool-desc">Distributed storage (HDFS) &amp; batch processing (MapReduce). The foundation of Big Data.</div></div>
+        <div class="tool-card"><div class="tool-icon">⚡</div><div class="tool-name">Apache Spark</div><div class="tool-desc">In-memory computing engine. 100× faster than MapReduce. Supports ML, SQL, streaming.</div></div>
+        <div class="tool-card"><div class="tool-icon">📊</div><div class="tool-name">Tableau</div><div class="tool-desc">Industry-leading data visualization tool. Connects to 100+ data sources with drag-and-drop dashboards.</div></div>
+        <div class="tool-card"><div class="tool-icon">🔍</div><div class="tool-name">Elasticsearch</div><div class="tool-desc">Distributed search &amp; analytics engine. Powers full-text search, log analysis (ELK Stack).</div></div>
+        <div class="tool-card"><div class="tool-icon">🌊</div><div class="tool-name">Apache Kafka</div><div class="tool-desc">Real-time event streaming platform. Handles millions of events/second at enterprise scale.</div></div>
+        <div class="tool-card"><div class="tool-icon">🐍</div><div class="tool-name">Python (Pandas/NumPy)</div><div class="tool-desc">De facto language for data science. Rich ML ecosystem: scikit-learn, TensorFlow, PyTorch.</div></div>
+        <div class="tool-card"><div class="tool-icon">☁️</div><div class="tool-name">AWS / Azure / GCP</div><div class="tool-desc">Cloud Big Data services: EMR, Redshift, Databricks, BigQuery — managed, scalable.</div></div>
+        <div class="tool-card"><div class="tool-icon">❄️</div><div class="tool-name">Snowflake</div><div class="tool-desc">Cloud-native data warehouse. Separates storage &amp; compute. SQL interface for petabyte-scale analytics.</div></div>
+      </div>
+
+      <div class="hl-box hl-blue">
+        <strong style="color:var(--accent);">Tool Selection Guide:</strong>
+        <span class="pill pill-blue">Batch Processing → Hadoop/MapReduce</span>
+        <span class="pill pill-purple">Real-time Streaming → Kafka + Spark Streaming</span>
+        <span class="pill pill-green">SQL Analytics → Hive / Snowflake / BigQuery</span>
+        <span class="pill pill-amber">Visualization → Tableau / Power BI</span>
+        <span class="pill pill-blue">ML/AI → Python + Spark MLlib</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 17: Summary ═════════════════════════════ -->
+    <div class="slide" id="s17">
+      <div class="slide-tag">Unit 1 Summary</div>
+      <div class="slide-title">Key Takeaways</div>
+      <div class="slide-subtitle">Everything you need to remember from Unit 1 at a glance.</div>
+
+      <div class="grid-3" style="margin-bottom:16px;">
+        <div class="hl-box hl-blue" style="padding:16px 18px;">
+          <strong style="color:var(--accent);display:block;margin-bottom:8px;">Data Classification</strong>
+          <ul style="font-size:12.5px;padding-left:16px;line-height:1.7;">
+            <li>Structured → RDBMS, SQL</li>
+            <li>Semi-structured → JSON, XML</li>
+            <li>Unstructured → 80% of data</li>
+          </ul>
+        </div>
+        <div class="hl-box hl-purple" style="padding:16px 18px;">
+          <strong style="color:#a78bfa;display:block;margin-bottom:8px;">Big Data 5 V's</strong>
+          <ul style="font-size:12.5px;padding-left:16px;line-height:1.7;">
+            <li>Volume — Scale of data</li>
+            <li>Velocity — Speed of data</li>
+            <li>Variety — Types of data</li>
+            <li>Veracity — Quality of data</li>
+            <li>Value — Worth of data</li>
+          </ul>
+        </div>
+        <div class="hl-box hl-amber" style="padding:16px 18px;">
+          <strong style="color:var(--accent3);display:block;margin-bottom:8px;">Hadoop Ecosystem</strong>
+          <ul style="font-size:12.5px;padding-left:16px;line-height:1.7;">
+            <li>HDFS — Distributed storage</li>
+            <li>MapReduce — Processing</li>
+            <li>YARN — Resource management</li>
+            <li>Hive/Pig/HBase — Tools</li>
+          </ul>
+        </div>
+        <div class="hl-box hl-green" style="padding:16px 18px;">
+          <strong style="color:var(--green);display:block;margin-bottom:8px;">Analytics Types</strong>
+          <ul style="font-size:12.5px;padding-left:16px;line-height:1.7;">
+            <li>Descriptive — What happened</li>
+            <li>Diagnostic — Why it happened</li>
+            <li>Predictive — What will happen</li>
+            <li>Prescriptive — What to do</li>
+          </ul>
+        </div>
+        <div class="hl-box hl-red" style="padding:16px 18px;">
+          <strong style="color:#fca5a5;display:block;margin-bottom:8px;">BASE Model</strong>
+          <ul style="font-size:12.5px;padding-left:16px;line-height:1.7;">
+            <li><strong>B</strong>asically Available</li>
+            <li><strong>S</strong>oft State</li>
+            <li><strong>E</strong>ventual Consistency</li>
+            <li>Used in NoSQL systems</li>
+          </ul>
+        </div>
+        <div class="hl-box hl-blue" style="padding:16px 18px;">
+          <strong style="color:var(--accent);display:block;margin-bottom:8px;">BI vs Big Data</strong>
+          <ul style="font-size:12.5px;padding-left:16px;line-height:1.7;">
+            <li>BI → structured, batch, SQL</li>
+            <li>Big Data → all types, real-time</li>
+            <li>Hadoop replaces ETL pipelines</li>
+            <li>Open-source vs proprietary</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hl-box hl-purple" style="text-align:center;">
+        <strong style="color:#a78bfa;font-size:15px;">"Data is the new oil — but only if you can refine it."</strong><br>
+        <span style="font-size:12.5px;color:var(--muted);">Big Data gives organizations the tools to refine raw data into competitive advantage.</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════ SLIDE 18: END ══════════════════════════════════ -->
+    <div class="slide" id="s18">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:24px;">
+        <div style="font-size:4rem;">🎓</div>
+        <div class="hero-title">End of <span class="hero-accent">Unit 1</span></div>
+        <p style="font-size:15px;color:var(--muted);max-width:500px;line-height:1.7;">
+          You've covered the complete foundation of Big Data and Analytics. You're now ready for Unit 2 — Hadoop Architecture, HDFS internals, and MapReduce programming.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+          <span class="pill pill-blue" style="font-size:13px;padding:8px 16px;">18 Slides Covered</span>
+          <span class="pill pill-purple" style="font-size:13px;padding:8px 16px;">12 Major Topics</span>
+          <span class="pill pill-green" style="font-size:13px;padding:8px 16px;">30+ Real Examples</span>
+          <span class="pill pill-amber" style="font-size:13px;padding:8px 16px;">10+ Visualizations</span>
+        </div>
+        <button class="nav-btn" onclick="goSlide(1)" style="padding:10px 28px;font-size:14px;margin-top:8px;">↩ Back to Start</button>
+      </div>
+    </div>
+
+  </div><!-- /slides-viewport -->
+
+  <!-- DOT NAV -->
+  <div id="dot-nav"></div>
+</div>
+
+<script>
+  const TOTAL = 18;
+  let current = 1;
+
+  function buildDots() {
+    const nav = document.getElementById('dot-nav');
+    for (let i = 1; i <= TOTAL; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === 1 ? ' active' : '');
+      d.title = 'Slide ' + i;
+      d.onclick = () => goSlide(i);
+      nav.appendChild(d);
+    }
+  }
+
+  function goSlide(n) {
+    document.getElementById('s' + current).classList.remove('active');
+    document.querySelectorAll('.dot')[current - 1].classList.remove('active');
+    current = Math.max(1, Math.min(TOTAL, n));
+    document.getElementById('s' + current).classList.add('active');
+    document.querySelectorAll('.dot')[current - 1].classList.add('active');
+    document.getElementById('slide-counter').textContent = current + ' / ' + TOTAL;
+    document.getElementById('progress-bar').style.width = ((current / TOTAL) * 100) + '%';
+    document.getElementById('prevBtn').disabled = (current === 1);
+    document.getElementById('nextBtn').disabled = (current === TOTAL);
+    // scroll slide to top
+    document.getElementById('s' + current).scrollTop = 0;
+  }
+
+  function changeSlide(dir) { goSlide(current + dir); }
+
+  // keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+  });
+
+  buildDots();
+  goSlide(1);
+</script>
+</body>
+</html>
